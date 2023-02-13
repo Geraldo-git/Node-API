@@ -31,24 +31,30 @@ app.put('/projects/:id', function (request, response) {
 
     const { id } = request.params;
     const { nome, owner } = request.body;
-    console.log(`Dados: ${id} ${nome} ${owner}`);
 
-    return response.json([
-        'Projeto 4',
-        'Projeto 2',
-        'Projeto 3'
-    ]);
+    const projectIndex = projects.findIndex(p => p.id === id);
+    if (projectIndex < 0) {
+        return response.status(404).json({ Error: 'Projeto não encontrado!' });
+    }
+
+    if (!nome && !owner) {
+        return response.status(400).json({ Error: 'Nome e owner são requeridos!' });
+    }
+
+    const project = { id, nome, owner };
+    projects[projectIndex] = project;
+
+    return response.json(project);
 })
 
-app.delete('/projects/:id/:nome', function (request, response) {
-
-    const id = request.params;
-    console.log(id);
-
-    return response.json([
-        'Projeto 2',
-        'Projeto 3'
-    ]);
+app.delete('/projects/:id', function (request, response) {
+    const { id } = request.params;
+    const projectIndex = projects.findIndex(p => p.id === id);
+    if (projectIndex < 0) {
+        return response.status(404).json({ Error: 'Projeto não encontrado!' });
+    }
+    projects.splice(projectIndex, 1);
+    return response.status(204).send();
 })
 
 app.listen(3000, () => { console.log("Server escutando porta 3000!") });
