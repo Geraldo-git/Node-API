@@ -11,7 +11,17 @@ app.use(express.json());
 const id = uuidv4();
 const projects = [];
 
-app.get('/projects', function (request, response) {
+function logRoutes(request, response, next) {
+    const { method, url } = request;
+    const route = `[${method.toUpperCase()}] ${url}`;
+    console.log(route);
+    return next();
+}
+
+
+//app.use(logRoutes);
+
+app.get('/projects', logRoutes, function (request, response) {
     return response.json(projects);
 })
 
